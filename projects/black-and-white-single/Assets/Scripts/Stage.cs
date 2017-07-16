@@ -19,7 +19,26 @@ public class Stage : MonoBehaviour
     {
         // 객체가 생성된 후 호출
 
-        Init(width, height);    // 가로, 세로 길이를 이용한 스테이지 초기화
+        GetComponent<BoxCollider2D>().size = new Vector2(width, height);                                  // 마우스 클릭 이벤트를 위한 충돌체 크기 설정
+
+        tiles = new GameObject[height, width];                                                       // 가로, 세로 길이를 이용해 tiles 배열을 동적 할당
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                Object tilePrefab = (i + j) % 2 == 0 ? blackTile : whiteTile;    // 이중 for문 내에서 (i + j)의 홀수, 짝수 여부에 따른 타일 프리팹 설정
+
+                tiles[i, j] = Instantiate(tilePrefab, transform) as GameObject;                       // tiles 배열에 타일 프리팹 인스턴스 생성 및 할당
+                tiles[i, j].transform.localPosition = new Vector3(j - width / 2, height / 2 - i, 0);                     // 인스턴스의 로컬 좌표계 설정
+            }
+        }
+
+        int x = Random.Range(0, width);                                                        // 가로 길이 범위 내에서 Random 난수를 이용한 x좌표 생성
+        int y = Random.Range(0, height);                                                       // 세로 길이 범위 내에서 Random 난수를 이용한 y좌표 생성
+
+        stone = Instantiate(whiteStone);                                                                          // 프리펩을 이용해 돌 인스턴스를 생성
+        MoveStone(ref stone, x, y);                                                                                    // x, y좌표를 이용해 타일에 배치
     }
 
     void OnMouseDown()
@@ -39,37 +58,26 @@ public class Stage : MonoBehaviour
         }
     }
 
-    public void Init(int width, int height)
-    {
-        // 스테이지 초기화 (width : 가로 길이, height : 세로 길이)
-
-        GetComponent<BoxCollider2D>().size = new Vector2(width, height);                                  // 마우스 클릭 이벤트를 위한 충돌체 크기 설정
-
-        tiles = new GameObject[height, width];                                                       // 가로, 세로 길이를 이용해 tiles 배열을 동적 할당
-
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                Object tilePrefab = (i + j) % 2 == 0 ? blackTile : whiteTile;    // 이중 for문 내에서 (i + j)의 홀수, 짝수 여부에 따른 타일 프리팹 설정
-                
-                tiles[i, j] = Instantiate(tilePrefab, transform) as GameObject;                       // tiles 배열에 타일 프리팹 인스턴스 생성 및 할당
-                tiles[i, j].transform.localPosition = new Vector3(j - width / 2, height / 2 - i, 0);                     // 인스턴스의 로컬 좌표계 설정
-            }
-        }
-
-        int x = Random.Range(0, width);                                                        // 가로 길이 범위 내에서 Random 난수를 이용한 x좌표 생성
-        int y = Random.Range(0, height);                                                       // 세로 길이 범위 내에서 Random 난수를 이용한 y좌표 생성
-
-        stone = Instantiate(whiteStone, tiles[y, x].transform);            // stone에 무작위로 생성된 x, y 좌표에 위치한 타일의 transform을 부모로 설정 
-        stone.transform.localPosition = new Vector3(0, 0, -1);                                                              // stone의 로컬 좌표계 설정
-    }
-
     public void MoveStone(ref GameObject stone, int x, int y)
     {
         // 돌의 위치 변경 (stone : 움직이고자 하는 GameObject 객체, x : 목표 지점의 x좌표, y : 목표 지점의 y좌표)
 
-        stone.transform.parent = tiles[y, x].transform;    // stone에 x, y 좌표에 위치한 타일의 transform을 부모로 설정
-        stone.transform.localPosition = new Vector3(0, 0, -1);                              // stone의 로컬 좌표계 설정
+        GameObject tile = tiles[y, x];                                                 // 돌이 이동하고자 하는 타일
+        Renderer stoneRenderer = stone.GetComponent<Renderer>();    // 돌의 디스플레이를 제어하는 Renderer 컴포넌트
+
+        stone.transform.parent = tile.transform;       // stone에 x, y 좌표에 위치한 타일의 transform을 부모로 설정
+        stone.transform.localPosition = new Vector3(0, 0, 0);                           // stone의 로컬 좌표계 설정
+
+        // 돌과 타일 사이 태그의 일치 여부에 따라 돌의 디스플레이 조정
+
+        if (stone.tag.Equals(tile.tag))
+        {
+            stoneRenderer.enabled = false;
+        }
+
+        else
+        {
+            stoneRenderer.enabled = true;
+        }
     }
 }

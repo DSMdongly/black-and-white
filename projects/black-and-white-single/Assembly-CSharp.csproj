@@ -48,7 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Stage.cs" />
  <Reference Include="Facebook.Unity.Settings">
- <HintPath>E:/Projects/unity_workspace/black-and-white/black-and-white-single/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
+ <HintPath>E:/Projects/unity_workspace/black-and-white/projects/black-and-white-single/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
